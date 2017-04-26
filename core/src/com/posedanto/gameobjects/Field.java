@@ -29,16 +29,24 @@ public class Field {
             for (int j = 0; j < COUNT_CELLS_X; j++)
                 myField[i][j] = -1;
         //myField[0][3] = myField[0][7] = myField[0][5] = myField[1][4] = 0;
-        for(int i=0; i<10;i++)
+        /*for(int i=0; i<10;i++)
             myField[0][i] = 1;
         for(int i=0; i<10;i++)
             myField[1][i] = 3;
-        myField[0][5] = myField[1][5] = -1;
+        for(int i=0; i<10;i++)
+            myField[2][i] = 3;
+        for(int i=0; i<10;i++)
+            myField[3][i] = 3;*/
+        myField[0][5] = myField[2][5] = myField[1][4] = myField[0][7] = 1;
     }
 
     public void removeLine(int y) {
+        int[] topLine = myField[y];
         for (int i = y; i < COUNT_CELLS_Y - 1; i++)
             myField[i]=myField[i+1];
+
+        myField[COUNT_CELLS_Y-1] = topLine;
+
         for(int i=0; i < COUNT_CELLS_X; i++)
             myField[COUNT_CELLS_Y-1][i] = -1;
     }

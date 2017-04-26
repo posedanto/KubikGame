@@ -14,6 +14,10 @@ import com.posedanto.gameobjects.Figure;
 import com.posedanto.gameobjects.FigureForms;
 import com.posedanto.gameobjects.NextFigureField;
 import com.posedanto.helpers.AssetLoader;
+import com.posedanto.helpers.InputHandler;
+import com.posedanto.ui.SimpleButton;
+
+import java.util.List;
 
 
 /**
@@ -32,11 +36,12 @@ public class GameRenderer {
     private Vector2[] fPosition = new Vector2[4];
 
     private float runTime;
-    private int score = 0;
 
     private Texture field, brick, brick2, scoreboard, next;
     private static Texture[] rainbowBricks;
     private BitmapFont font;
+
+    private List<SimpleButton> gameButtons;
 
     public GameRenderer(GameWorld myWorld) {
         myField = myWorld.getField();
@@ -51,6 +56,8 @@ public class GameRenderer {
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
         initAssets();
+
+        gameButtons = ((InputHandler)Gdx.input.getInputProcessor()).getGameButtons();
     }
 
     private void initAssets() {
@@ -72,9 +79,12 @@ public class GameRenderer {
         drawField(delta);
         if (myWorld.isFigureFalling()) //добавить GAMEOVER, когда фигуры будут цветные
             drawFigure();
+        drawInfo();
+        drawGameButtons();
         if (myWorld.isGameOver())
             drawScoreboard();
-        drawInfo();
+        if (myWorld.isHighscore())
+            drawHighscoreBoard();
         batch.end();
     }
 
@@ -93,10 +103,18 @@ public class GameRenderer {
                     myNextFigureField.getFigurePositionX() + pos.x * Field.CELL_SIZE,
                     myNextFigureField.getFigurePositionY() + pos.y * Field.CELL_SIZE);
 
-        font.setColor(Color.CORAL);
-        font.draw(batch, "Score:", 730, 1250);
-        font.draw(batch, "" + score, 715, 1100, 300, Align.center, true);
-        score++;
+        font.setColor(Color.FIREBRICK);
+        font.draw(batch, "Score:", 650, 1250, 430, Align.center, true);
+        font.draw(batch, "" + myWorld.getScore(), 650, 1100, 430, Align.center, true);
+
+        font.setColor(Color.CYAN);
+        font.draw(batch, "Best:", 650, 950, 430, Align.center, true);
+        font.draw(batch, "" + myWorld.getHighScore(), 650, 800, 430, Align.center, true);
+    }
+
+    private void drawGameButtons(){
+        for (SimpleButton button : gameButtons)
+            button.draw(batch);
     }
 
     private void drawField(float delta) {
@@ -156,6 +174,18 @@ public class GameRenderer {
     }
 
     private void drawScoreboard() {
-        batch.draw(scoreboard,  100, 200, 880, 800);
+        batch.draw(scoreboard,  100, 600, 880, 800);
+        font.setColor(Color.WHITE);
+        font.draw(batch, "GAME OVER", 100, 1350, 880, Align.center, true);
+        font.draw(batch, "SCORE: " + myWorld.getScore(), 100, 1200, 880, Align.center, true);
+        font.draw(batch, "HIGHSCORE: " + myWorld.getHighScore(), 100, 1050, 880, Align.center, true);
+    }
+
+    private  void drawHighscoreBoard() {
+        batch.draw(scoreboard,  100, 600, 880, 800);
+        font.setColor(Color.WHITE);
+        font.draw(batch, "GAME OVER", 100, 1350, 880, Align.center, true);
+        font.draw(batch, "NEW HIGHSCORE!!! ", 100, 1200, 880, Align.center, true);
+        font.draw(batch, "" + myWorld.getHighScore(), 100, 1050, 880, Align.center, true);
     }
 }

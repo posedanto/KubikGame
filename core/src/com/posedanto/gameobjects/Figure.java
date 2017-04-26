@@ -14,6 +14,7 @@ public class Figure {
     private float runTime, fallDelay;
     private FigureForms.rotation rotation;
     private FigureForms.forms form;
+    private boolean isStopped = false;
 
     public Figure() {
         reset();
@@ -24,8 +25,8 @@ public class Figure {
         runTime = 0;
         fallDelay = 1;
         rotation = FigureForms.rotation.FLIP_0;
-        //form = FigureForms.getRandomForm();
-        form = FigureForms.forms.J_FORM;
+        form = FigureForms.getRandomForm();
+        //form = FigureForms.forms.S_FORM;
     }
 
     public void update(float delta) {
@@ -40,6 +41,7 @@ public class Figure {
         position = new Vector2(4, 19);
         runTime = 0;
         fallDelay = 1;
+        isStopped = false;
         rotation = fig.getRotation();
         form = fig.getForm();
     }
@@ -59,6 +61,14 @@ public class Figure {
 
     public int getColorNumber() {
         return FigureForms.getFormNumber(form);
+    }
+
+    public void setStopped(boolean stopped) {
+        isStopped = stopped;
+    }
+
+    public boolean isStopped() {
+        return isStopped;
     }
 
     public void decFallDelay() {
