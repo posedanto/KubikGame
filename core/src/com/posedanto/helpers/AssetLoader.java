@@ -13,7 +13,10 @@ public class AssetLoader {
     public static Texture field, brick, brick2, scoreboard, next;
     public static Texture[] rainbowBricks = new Texture[7];
     public static Texture buttonLeft, buttonLeftDown,buttonRight, buttonRightDown,
-            buttonDown, buttonDownDown, buttonRotate, buttonRotateDown;
+            buttonDown, buttonDownDown, buttonRotate, buttonRotateDown,
+            buttonPause, buttonPauseDown;
+    public static Texture buttonContinue, buttonContinueDown, buttonNewGame, buttonNewGameDown,
+            buttonExit, buttonExitDown;
     public static BitmapFont font;
 
     public static Preferences preferences;
@@ -44,6 +47,15 @@ public class AssetLoader {
         buttonDownDown = new Texture(Gdx.files.internal("buttonDOWNpressed.png"));
         buttonRotate = new Texture(Gdx.files.internal("buttonROTATE.png"));
         buttonRotateDown = new Texture(Gdx.files.internal("buttonROTATEpressed.png"));
+        buttonPause = new Texture(Gdx.files.internal("buttonPAUSE.png"));
+        buttonPauseDown = new Texture(Gdx.files.internal("buttonPAUSEpressed.png"));
+
+        buttonContinue = new Texture(Gdx.files.internal("continue.png"));
+        buttonContinueDown = new Texture(Gdx.files.internal("continuePRESSED.png"));
+        buttonNewGame = new Texture(Gdx.files.internal("newgame.png"));
+        buttonNewGameDown = new Texture(Gdx.files.internal("newgamePRESSED.png"));
+        buttonExit = new Texture(Gdx.files.internal("exit.png"));
+        buttonExitDown = new Texture(Gdx.files.internal("exitPRESSED.png"));
 
         font = new BitmapFont(Gdx.files.internal("font.fnt"));
     }

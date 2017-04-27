@@ -33,7 +33,7 @@ public class GameScreen implements Screen {
         world.update(delta);
         renderer.render(delta);
 
-        Gdx.app.log("GameScreen FPS", (1/delta) + "");
+        //Gdx.app.log("GameScreen FPS", (1/delta) + "");
     }
 
     @Override

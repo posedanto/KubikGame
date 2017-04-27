@@ -23,13 +23,13 @@ public class GameWorld {
     private Vector2[] fPos = new Vector2[4];
     private int removingLine;
     private int score, xScore, highScore;
-    private float runTime;
+    private float runTime = 0;
 
-    private GameState currentState;
+    private GameState currentState, savedState;
 
     public enum GameState {
         FIGURE_FALLING, FIGURE_FELL, FIGURE_ADDITION, LINE_SEARCHING, LINE_REMOVING, LINE_REMOVED,
-        GAMEOVER, HIGHSCORE
+        GAMEOVER, HIGHSCORE, PAUSE
     }
 
     public GameWorld() {
@@ -87,12 +87,15 @@ public class GameWorld {
                 fPosition = FigureForms.getCoordinates(myFigure.getForm(), myFigure.getRotation(),
                         myFigure.getPosition());
                 if(! isHereClean(fPosition))
-                    if (score > highScore) {
+                    if (score > AssetLoader.getHighScore()) {
                         AssetLoader.setHighScore(score);
                         currentState = GameState.HIGHSCORE;
+                        Gdx.input.vibrate(new long[] { 0, 200, 200, 200, 200, 500}, -1);
                     }
-                    else
+                    else {
+                        Gdx.input.vibrate(1000);
                         currentState = GameState.GAMEOVER;
+                    }
                 else
                     currentState = GameState.FIGURE_FALLING;
                 break;
@@ -101,6 +104,9 @@ public class GameWorld {
                 break;
             case HIGHSCORE:
                 Gdx.app.log("game", "HIGHSCORE");
+                break;
+            case PAUSE:
+
                 break;
         }
     }
@@ -192,8 +198,34 @@ public class GameWorld {
         return true;
     }
 
-    public void setLineRemoved() {
-        currentState = GameState.LINE_REMOVED;
+    public void resetGame() {
+        myField.reset();
+        myFigure.reset();
+        myNextFigureField.resetNextFigure();
+        currentState = GameState.FIGURE_FALLING;
+        score = xScore = 0;
+        highScore = AssetLoader.getHighScore();
+        runTime = 0;
+    }
+
+    public void setState(GameState gameState) {
+        if (gameState == GameState.PAUSE)
+            savedState = currentState;
+        currentState = gameState;
+    }
+
+    public void continueGame() {
+        currentState = savedState;
+    }
+
+    public boolean isRunning() {
+        return currentState == GameState.FIGURE_FALLING || currentState == GameState.FIGURE_FELL ||
+                currentState == GameState.FIGURE_ADDITION ||currentState == GameState.LINE_SEARCHING
+                || currentState == GameState.LINE_REMOVING || currentState == GameState.LINE_REMOVED;
+    }
+
+    public boolean isPause() {
+        return currentState == GameState.PAUSE;
     }
 
     public boolean isGameOver() {
@@ -204,16 +236,18 @@ public class GameWorld {
         return currentState == GameState.HIGHSCORE;
     }
 
-    public boolean isFigureFalling() {
-        return currentState == GameState.FIGURE_FALLING;
+    public boolean isFigureDrawing() {
+        return currentState == GameState.FIGURE_FALLING || currentState == GameState.FIGURE_FELL ||
+                currentState == GameState.GAMEOVER || currentState == GameState.HIGHSCORE ||
+                currentState == GameState.PAUSE;
     }
 
     public boolean isLineRemoving() {
         return currentState == GameState.LINE_REMOVING;
     }
 
-    public boolean isLineRemoved() {
-        return currentState == GameState.LINE_REMOVED;
+    public boolean isFigureFell() {
+        return currentState == GameState.FIGURE_FELL;
     }
 
     public int getRemovingLine() {

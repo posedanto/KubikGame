@@ -24,6 +24,7 @@ public class Figure {
         position = new Vector2(4, 19);
         runTime = 0;
         fallDelay = 1;
+        isStopped = false;
         rotation = FigureForms.rotation.FLIP_0;
         form = FigureForms.getRandomForm();
         //form = FigureForms.forms.S_FORM;
@@ -40,7 +41,6 @@ public class Figure {
     public void setFromNextFigure(Figure fig) {
         position = new Vector2(4, 19);
         runTime = 0;
-        fallDelay = 1;
         isStopped = false;
         rotation = fig.getRotation();
         form = fig.getForm();
@@ -73,6 +73,10 @@ public class Figure {
 
     public void decFallDelay() {
         fallDelay = 0.1f;
+    }
+
+    public void setFallDelayDefault() {
+        fallDelay = 1f;
     }
 
     public Vector2 getPosition() {

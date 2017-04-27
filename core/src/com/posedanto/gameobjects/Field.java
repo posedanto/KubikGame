@@ -37,7 +37,7 @@ public class Field {
             myField[2][i] = 3;
         for(int i=0; i<10;i++)
             myField[3][i] = 3;*/
-        myField[0][5] = myField[2][5] = myField[1][4] = myField[0][7] = 1;
+        //myField[0][5] = myField[2][5] = myField[1][4] = myField[0][7] = 1;
     }
 
     public void removeLine(int y) {
@@ -49,6 +49,12 @@ public class Field {
 
         for(int i=0; i < COUNT_CELLS_X; i++)
             myField[COUNT_CELLS_Y-1][i] = -1;
+    }
+
+    public void reset() {
+        for (int i = 0; i < COUNT_CELLS_Y; i++)
+            for (int j = 0; j < COUNT_CELLS_X; j++)
+                myField[i][j] = -1;
     }
 
     public void setCell(int x, int y, int color) {

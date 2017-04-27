@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class SimpleButton {
     private int x, y, width, height;
+    private int pointer = -1; //finger's ID for multituch
     private String id;
     private Texture button, buttonPressed;
     private boolean isPressed = false;
@@ -46,10 +47,21 @@ public class SimpleButton {
     public boolean isTouchUp(int screenX, int screenY) {
         if (bounds.contains(screenX, screenY) && isPressed) {
             isPressed = false;
+            pointer = -1;
             return true;
         }
         isPressed = false;
+        pointer = -1;
         return false;
+    }
+
+    public void setPointer(int pointer) {
+        if (this.pointer == -1)
+            this.pointer = pointer;
+    }
+
+    public int getPointer() {
+        return pointer;
     }
 
     public String getId() {

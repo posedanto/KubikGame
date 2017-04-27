@@ -41,7 +41,7 @@ public class GameRenderer {
     private static Texture[] rainbowBricks;
     private BitmapFont font;
 
-    private List<SimpleButton> gameButtons;
+    private List<SimpleButton> gameButtons, pauseButtons, scoreboardButtons;
 
     public GameRenderer(GameWorld myWorld) {
         myField = myWorld.getField();
@@ -58,6 +58,8 @@ public class GameRenderer {
         initAssets();
 
         gameButtons = ((InputHandler)Gdx.input.getInputProcessor()).getGameButtons();
+        pauseButtons = ((InputHandler)Gdx.input.getInputProcessor()).getPauseButtons();
+        scoreboardButtons = ((InputHandler)Gdx.input.getInputProcessor()).getScoreboardButtons();
     }
 
     private void initAssets() {
@@ -73,14 +75,16 @@ public class GameRenderer {
     public void render(float delta) {
         Gdx.gl.glClearColor(19/255f, 29/255f, 48/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (myWorld.isLineRemoved())
+        if (myWorld.isFigureFell())
             runTime = -0.2f;
         batch.begin();
         drawField(delta);
-        if (myWorld.isFigureFalling()) //добавить GAMEOVER, когда фигуры будут цветные
+        if (!myWorld.isLineRemoving())
             drawFigure();
         drawInfo();
         drawGameButtons();
+        if (myWorld.isPause())
+            drawPauseBoard();
         if (myWorld.isGameOver())
             drawScoreboard();
         if (myWorld.isHighscore())
@@ -90,7 +94,7 @@ public class GameRenderer {
 
     private void drawInfo() {
         font.setColor(Color.RED);
-        font.draw(batch, "Next:", 750, 1700);
+        font.draw(batch, "Next:", 650, 1700, 430, Align.center, true);
         batch.draw(next, myNextFigureField.getPositionX() , myNextFigureField.getPositionY());
 
         fPosition[0].set(myNextFigureField.getFigurePosition()[0]);
@@ -103,17 +107,27 @@ public class GameRenderer {
                     myNextFigureField.getFigurePositionX() + pos.x * Field.CELL_SIZE,
                     myNextFigureField.getFigurePositionY() + pos.y * Field.CELL_SIZE);
 
-        font.setColor(Color.FIREBRICK);
         font.draw(batch, "Score:", 650, 1250, 430, Align.center, true);
         font.draw(batch, "" + myWorld.getScore(), 650, 1100, 430, Align.center, true);
 
-        font.setColor(Color.CYAN);
+        font.setColor(Color.SKY);
         font.draw(batch, "Best:", 650, 950, 430, Align.center, true);
         font.draw(batch, "" + myWorld.getHighScore(), 650, 800, 430, Align.center, true);
     }
 
+    private void drawPauseBoard() {
+        batch.draw(scoreboard,  100, 600, 880, 800);
+        for (SimpleButton button : pauseButtons)
+            button.draw(batch);
+    }
+
     private void drawGameButtons(){
         for (SimpleButton button : gameButtons)
+            button.draw(batch);
+    }
+
+    private void drawScoreboardButtons(){
+        for (SimpleButton button : scoreboardButtons)
             button.draw(batch);
     }
 
@@ -151,7 +165,7 @@ public class GameRenderer {
                     if (width <= 0) {
                         if (i == 9) {
                             runTime = 0;
-                            myWorld.setLineRemoved();
+                            myWorld.setState(GameWorld.GameState.LINE_REMOVED);
                         }
                         else
                             continue;
@@ -174,18 +188,21 @@ public class GameRenderer {
     }
 
     private void drawScoreboard() {
-        batch.draw(scoreboard,  100, 600, 880, 800);
-        font.setColor(Color.WHITE);
-        font.draw(batch, "GAME OVER", 100, 1350, 880, Align.center, true);
-        font.draw(batch, "SCORE: " + myWorld.getScore(), 100, 1200, 880, Align.center, true);
-        font.draw(batch, "HIGHSCORE: " + myWorld.getHighScore(), 100, 1050, 880, Align.center, true);
+        batch.draw(scoreboard,  100, 550, 880, 900);
+        font.setColor(Color.YELLOW);
+        font.draw(batch, "GAME OVER", 100, 1400, 880, Align.center, true);
+        font.draw(batch, "SCORE: " + myWorld.getScore(), 100, 1250, 880, Align.center, true);
+        font.draw(batch, "HIGHSCORE: " + myWorld.getHighScore(), 100, 1100, 880, Align.center, true);
+        drawScoreboardButtons();
     }
 
     private  void drawHighscoreBoard() {
-        batch.draw(scoreboard,  100, 600, 880, 800);
-        font.setColor(Color.WHITE);
-        font.draw(batch, "GAME OVER", 100, 1350, 880, Align.center, true);
-        font.draw(batch, "NEW HIGHSCORE!!! ", 100, 1200, 880, Align.center, true);
-        font.draw(batch, "" + myWorld.getHighScore(), 100, 1050, 880, Align.center, true);
+        batch.draw(scoreboard,  100, 550, 880, 900);
+        font.setColor(Color.YELLOW);
+        font.draw(batch, "GAME OVER", 100, 1400, 880, Align.center, true);
+        font.draw(batch, "NEW HIGHSCORE!!! ", 100, 1250, 880, Align.center, true);
+        font.draw(batch, "" + myWorld.getHighScore(), 100, 1100, 880, Align.center, true);
+        batch.draw(AssetLoader.buttonNewGame,  277, 800, 525, 150);
+        batch.draw(AssetLoader.buttonExit,  277, 600, 525, 150);
     }
 }
