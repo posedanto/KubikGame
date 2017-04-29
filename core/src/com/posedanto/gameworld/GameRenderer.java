@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
+import com.posedanto.TweenAccessors.Transition;
 import com.posedanto.gameobjects.Field;
 import com.posedanto.gameobjects.Figure;
 import com.posedanto.gameobjects.FigureForms;
@@ -36,6 +38,7 @@ public class GameRenderer {
     private Vector2[] fPosition = new Vector2[4];
 
     private float runTime;
+    private ShapeRenderer shapeRenderer;
 
     private Texture field, brick, brick2, scoreboard, next;
     private static Texture[] rainbowBricks;
@@ -55,6 +58,10 @@ public class GameRenderer {
         camera.setToOrtho(false, 1080, 1920);
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
+
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+
         initAssets();
 
         gameButtons = ((InputHandler)Gdx.input.getInputProcessor()).getGameButtons();
@@ -79,7 +86,7 @@ public class GameRenderer {
             runTime = -0.2f;
         batch.begin();
         drawField(delta);
-        if (!myWorld.isLineRemoving())
+        if (myWorld.isFigureDrawing())
             drawFigure();
         drawInfo();
         drawGameButtons();
@@ -90,10 +97,11 @@ public class GameRenderer {
         if (myWorld.isHighscore())
             drawHighscoreBoard();
         batch.end();
+        Transition.drawTransition(shapeRenderer, delta);
     }
 
     private void drawInfo() {
-        font.setColor(Color.RED);
+        font.setColor(Color.CHARTREUSE);
         font.draw(batch, "Next:", 650, 1700, 430, Align.center, true);
         batch.draw(next, myNextFigureField.getPositionX() , myNextFigureField.getPositionY());
 
@@ -107,15 +115,17 @@ public class GameRenderer {
                     myNextFigureField.getFigurePositionX() + pos.x * Field.CELL_SIZE,
                     myNextFigureField.getFigurePositionY() + pos.y * Field.CELL_SIZE);
 
+        font.setColor(Color.ROYAL);
         font.draw(batch, "Score:", 650, 1250, 430, Align.center, true);
         font.draw(batch, "" + myWorld.getScore(), 650, 1100, 430, Align.center, true);
 
-        font.setColor(Color.SKY);
+        font.setColor(Color.RED);
         font.draw(batch, "Best:", 650, 950, 430, Align.center, true);
         font.draw(batch, "" + myWorld.getHighScore(), 650, 800, 430, Align.center, true);
     }
 
     private void drawPauseBoard() {
+        drawDarkness();
         batch.draw(scoreboard,  100, 600, 880, 800);
         for (SimpleButton button : pauseButtons)
             button.draw(batch);
@@ -188,6 +198,7 @@ public class GameRenderer {
     }
 
     private void drawScoreboard() {
+        drawDarkness();
         batch.draw(scoreboard,  100, 550, 880, 900);
         font.setColor(Color.YELLOW);
         font.draw(batch, "GAME OVER", 100, 1400, 880, Align.center, true);
@@ -197,6 +208,7 @@ public class GameRenderer {
     }
 
     private  void drawHighscoreBoard() {
+        drawDarkness();
         batch.draw(scoreboard,  100, 550, 880, 900);
         font.setColor(Color.YELLOW);
         font.draw(batch, "GAME OVER", 100, 1400, 880, Align.center, true);
@@ -204,5 +216,17 @@ public class GameRenderer {
         font.draw(batch, "" + myWorld.getHighScore(), 100, 1100, 880, Align.center, true);
         batch.draw(AssetLoader.buttonNewGame,  277, 800, 525, 150);
         batch.draw(AssetLoader.buttonExit,  277, 600, 525, 150);
+    }
+
+    private void drawDarkness() {
+        batch.end();
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0, 0, 0, .7f);
+        shapeRenderer.rect(0, 0, 1080, 1920);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+        batch.begin();
     }
 }

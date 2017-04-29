@@ -43,7 +43,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-
+        world.setState(GameWorld.GameState.PAUSE);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        world.setState(GameWorld.GameState.PAUSE);
     }
 
     @Override

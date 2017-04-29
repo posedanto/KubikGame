@@ -2,6 +2,7 @@ package com.posedanto.gameworld;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.posedanto.TweenAccessors.Transition;
 import com.posedanto.gameobjects.Field;
 import com.posedanto.gameobjects.Figure;
 import com.posedanto.gameobjects.FigureForms;
@@ -39,12 +40,13 @@ public class GameWorld {
         currentState = GameState.FIGURE_FALLING;
         score = xScore = 0;
         highScore = AssetLoader.getHighScore();
+        Transition.prepareTransition(255, 255, 255, 1f, null, false);
     }
 
     public void update(float delta) {
-        runTime += delta;
         switch (currentState) {
             case FIGURE_FALLING:
+                runTime += delta;
                 myFigure.update(delta);
                 if (checkBrickUnderFigure()) {
                     currentState = GameState.FIGURE_FELL;
@@ -91,10 +93,12 @@ public class GameWorld {
                         AssetLoader.setHighScore(score);
                         currentState = GameState.HIGHSCORE;
                         Gdx.input.vibrate(new long[] { 0, 200, 200, 200, 200, 500}, -1);
+                        Transition.prepareTransition(255, 255, 255, 1f, null, false);
                     }
                     else {
                         Gdx.input.vibrate(1000);
                         currentState = GameState.GAMEOVER;
+                        Transition.prepareTransition(255, 255, 255, 1f, null, false);
                     }
                 else
                     currentState = GameState.FIGURE_FALLING;
@@ -206,10 +210,11 @@ public class GameWorld {
         score = xScore = 0;
         highScore = AssetLoader.getHighScore();
         runTime = 0;
+        Transition.prepareTransition(255, 255, 255, 1f, null, false);
     }
 
     public void setState(GameState gameState) {
-        if (gameState == GameState.PAUSE)
+        if (gameState == GameState.PAUSE && gameState != currentState)
             savedState = currentState;
         currentState = gameState;
     }
@@ -220,8 +225,8 @@ public class GameWorld {
 
     public boolean isRunning() {
         return currentState == GameState.FIGURE_FALLING || currentState == GameState.FIGURE_FELL ||
-                currentState == GameState.FIGURE_ADDITION ||currentState == GameState.LINE_SEARCHING
-                || currentState == GameState.LINE_REMOVING || currentState == GameState.LINE_REMOVED;
+                currentState == GameState.LINE_SEARCHING  || currentState == GameState.LINE_REMOVING
+                || currentState == GameState.LINE_REMOVED;
     }
 
     public boolean isPause() {
